@@ -1,4 +1,5 @@
 package com.example.lab4_fp_grupo4.controller;
+import com.example.lab4_fp_grupo4.entity.Departments;
 import com.example.lab4_fp_grupo4.entity.Employees;
 import com.example.lab4_fp_grupo4.repository.DepartmentsRepository;
 import com.example.lab4_fp_grupo4.repository.EmployeesRepository;
@@ -13,7 +14,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -38,9 +41,20 @@ public class EmployeeController {
     }
 
     @GetMapping("/new")
-    public String nuevoEmployeeForm() {
-        //COMPLETAR
-        return "employee/Frm";
+    public String nuevoEmployeeForm(@ModelAttribute("employees") Employees employees, Model model) {
+        model.addAttribute("listaDepartaments", departmentsRepository.findAll());
+        model.addAttribute("listaJobs", jobsRepository.findAll());
+
+        List<Departments> departmentOpt = departmentsRepository.findAll();
+        List<Departments> departamentosFinales = new ArrayList<Departments>();
+        for (Departments i : departmentOpt){
+            if(i.getManagerid() != null){
+                departamentosFinales.add(i);
+            }
+        }
+        model.addAttribute("listaDepartamentosconJefes", departamentosFinales);
+
+        return "employee/newform";
     }
 
     @PostMapping("/save")
@@ -49,19 +63,28 @@ public class EmployeeController {
                                   @RequestParam(name="fechaContrato", required=false) String fechaContrato, Model model) {
 
         if(bindingResult.hasErrors()){
+            model.addAttribute("listaDepartaments", departmentsRepository.findAll());
             model.addAttribute("listaJobs", jobsRepository.findAll());
-            model.addAttribute("listaJefes", employeesRepository.findAll());
-            model.addAttribute("listaDepartments", departmentsRepository.findAll());
-            return "employee/Frm";
+            model.addAttribute("employees", employees);
+
+            List<Departments> departmentOpt = departmentsRepository.findAll();
+            List<Departments> departamentosFinales = new ArrayList<Departments>();
+            for (Departments i : departmentOpt){
+                if(i.getManagerid() != null){
+                    departamentosFinales.add(i);
+                }
+            }
+            model.addAttribute("listaDepartamentosconJefes", departamentosFinales);
+
+            return "employee/newform";
         }else {
 
             if (employees.getEmployeeid() == 0) {
-                attr.addFlashAttribute("msg", "Empleado creado exitosamente");
+                attr.addFlashAttribute("msg1", "Empleado creado exitosamente");
                 employees.setHiredate(new Date());
                 employeesRepository.save(employees);
                 return "redirect:/employee";
             } else {
-
                 try {
                     employees.setHiredate(new SimpleDateFormat("yyyy-MM-dd").parse(fechaContrato));
                 } catch (ParseException e) {
@@ -69,37 +92,60 @@ public class EmployeeController {
                 }
 
                 employeesRepository.save(employees);
-                attr.addFlashAttribute("msg", "Empleado actualizado exitosamente");
+                attr.addFlashAttribute("msg2", "Empleado actualizado exitosamente");
                 return "redirect:/employee";
             }
         }
     }
 
     @GetMapping("/edit")
-    public String editarEmployee() {
+    public String editarEmployee(Model model, @RequestParam("id") int id, @ModelAttribute("employees") Employees employees, RedirectAttributes redirectAttributes) {
+        Optional<Employees> employeesOptional = employeesRepository.findById(id);
+        if (employeesOptional.isPresent()) {
+            employees = employeesOptional.get();
+            Employees employei = new Employees();
+            if((employei = employees.getManagerid()) == null){
+                redirectAttributes.addFlashAttribute("nohayjefe", "No puedes editar a este usuario. MANAGER_ID = NULL");
+                return "redirect:/employee";
+            }
+            model.addAttribute("employees", employees);
+            model.addAttribute("listaDepartaments", departmentsRepository.findAll());
+            List<Departments> departmentOpt = departmentsRepository.findAll();
+            List<Departments> departamentosFinales = new ArrayList<Departments>();
+            for (Departments i : departmentOpt){
+                if(i.getManagerid() != null){
+                    departamentosFinales.add(i);
+                }
+            }
+            model.addAttribute("listaJobs", jobsRepository.findAll());
+            model.addAttribute("listaDepartamentosconJefes", departamentosFinales);
+            return "employee/newform";
+        } else {
+            return "redirect:/employee";
+        }
 
-        //COMPLETAR
     }
 
     @GetMapping("/delete")
     public String borrarEmpleado(Model model,
-                                      @RequestParam("id") int id,
-                                      RedirectAttributes attr) {
+                                 @RequestParam("id") int id,
+                                 RedirectAttributes attr) {
 
         Optional<Employees> optEmployees = employeesRepository.findById(id);
 
         if (optEmployees.isPresent()) {
             employeesRepository.deleteById(id);
-            attr.addFlashAttribute("msg","Empleado borrado exitosamente");
+            attr.addFlashAttribute("msg3","Empleado borrado exitosamente");
         }
         return "redirect:/employee";
 
     }
 
     @PostMapping("/search")
-    public String buscar (){
-
-        //COMPLETAR
+    public String buscar (@RequestParam("name") String name, Model model){
+        List<Employees> employeesOpt = employeesRepository.listarEmpleadosPorCaracteristicas(name);
+        model.addAttribute("listaEmployee",employeesOpt);
+        return "employee/lista";
     }
 
 }
