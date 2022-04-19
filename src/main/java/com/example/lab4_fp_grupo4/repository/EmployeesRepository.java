@@ -11,6 +11,7 @@ import java.util.List;
 @Repository
 public interface EmployeesRepository extends JpaRepository<Employees,Integer> {
 
+
     @Query(value="select * from employees e inner join jobs j on j.job_id = e.job_id\n" +
             "inner join departments d on d.department_id = e.department_id\n" +
             "inner join locations l on l.location_id = d.location_id\n" +
