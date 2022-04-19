@@ -11,33 +11,36 @@ public class Employees {
 
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    @Column(name = "employeeid")
+    @Column(name = "employee_id")
     private Integer employeeid;
-    @Column(name = "firstname")
+    @Column(name = "first_name")
     private String firstname;
-    @Column(name = "lastname")
+    @Column(name = "last_name")
     private String lastname;
     @Column(name = "email")
     private String email;
     @Column(name = "password")
     private String password;
-    @Column(name = "phonenumber")
+    @Column(name = "phone_number")
     private String phonenumber;
-    @Column(name = "hiredate")
+    @Column(name = "hire_date")
     private Date hiredate;
     @ManyToOne
-    @JoinColumn(name = "jobid")
+    @JoinColumn(name = "job_id")
     private Jobs jobid;
     @Column(name = "salary")
     private BigDecimal salary;
-    @Column(name = "commissionpct")
+    @Column(name = "commission_pct")
     private BigDecimal commissionpct;
     @ManyToOne
-    @JoinColumn(name = "managerid")
+    @JoinColumn(name = "manager_id")
     private Employees managerid;
+
+
+
     @ManyToOne
-    @JoinColumn(name = "deparmentid")
-    private Departments deparmentid;
+    @JoinColumn(name = "department_id")
+    private Departments departmentid;
     @Column(name = "enabled")
     private Integer enabled;
 
@@ -121,17 +124,21 @@ public class Employees {
         this.commissionpct = commissionpct;
     }
 
-    public Employees getManagerid() {return managerid;}
-
-    public void setManagerid(Employees managerid) {this.managerid = managerid;}
-
-    public Departments getDeparmentid() {
-        return deparmentid;
+    public Employees getManagerid() {
+        return managerid;
     }
 
-    public void setDeparmentid(Departments deparmentid) {
-        this.deparmentid = deparmentid;
+    public void setManagerid(Employees managerid) {
+        this.managerid = managerid;
     }
+    public Departments getDepartmentid() {
+        return departmentid;
+    }
+
+    public void setDepartmentid(Departments departmentid) {
+        this.departmentid = departmentid;
+    }
+
 
     public Integer getEnabled() {
         return enabled;
@@ -140,9 +147,5 @@ public class Employees {
     public void setEnabled(Integer enabled) {
         this.enabled = enabled;
     }
-
-
-
-
 
 }

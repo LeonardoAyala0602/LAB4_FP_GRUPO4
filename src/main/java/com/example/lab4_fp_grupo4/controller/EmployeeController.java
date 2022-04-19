@@ -103,8 +103,8 @@ public class EmployeeController {
         Optional<Employees> employeesOptional = employeesRepository.findById(id);
         if (employeesOptional.isPresent()) {
             employees = employeesOptional.get();
-            Employees employei = new Employees();
-            if((employei = employees.getManagerid()) == null){
+            Employees employe3 = new Employees();
+            if((employe3 = employees.getManagerid()) == null){
                 redirectAttributes.addFlashAttribute("nohayjefe", "No puedes editar a este usuario. MANAGER_ID = NULL");
                 return "redirect:/employee";
             }
