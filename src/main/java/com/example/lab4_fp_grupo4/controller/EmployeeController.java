@@ -105,7 +105,7 @@ public class EmployeeController {
             employees = employeesOptional.get();
             Employees employe3 = new Employees();
             if((employe3 = employees.getManagerid()) == null){
-                redirectAttributes.addFlashAttribute("nohayjefe", "No puedes editar a este usuario, no tiene maanager id");
+                redirectAttributes.addFlashAttribute("nohayjefe", "No puedes editar a este usuario, no tiene manager id");
                 return "redirect:/employee";
             }
             model.addAttribute("employees", employees);
