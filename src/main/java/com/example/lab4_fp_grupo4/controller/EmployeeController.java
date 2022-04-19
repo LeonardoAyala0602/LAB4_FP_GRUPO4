@@ -37,6 +37,7 @@ public class EmployeeController {
         model.addAttribute("listaEmployee", employeesRepository.findAll());
         model.addAttribute("listaJobs", jobsRepository.findAll());
         model.addAttribute("listaDepartments", departmentsRepository.findAll());
+        //hOLIS//
         return "employee/lista";
     }
 
